@@ -49,7 +49,7 @@ class MovieGenresDataset(Dataset):
         else:
             multi_hot_gt = torch.tensor(torch.nan, dtype=torch.float32).repeat(self.labelhandler.get_multi_hot_length())
         # Combine all features as needed
-        features = {'movie_id': row['movie_id'], 'input_tokens': input_tokens, 'attention_mask': attention_mask}
+        features = {'movie_description': movie_description, 'movie_id': row['movie_id'], 'input_tokens': input_tokens, 'attention_mask': attention_mask}
 
         return features, multi_hot_gt
 
@@ -98,4 +98,4 @@ def create_dataloader(filename, tokenizer, labelhandler, config, fold=None, vali
             train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size], generator=generator)
         return DataLoader(train_dataset, batch_size=batch_size, shuffle=True), DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    return DataLoader(dataset, batch_size=batch_size, shuffle=False)
+    return DataLoader(dataset, batch_size=batch_size, shuffle=False), None

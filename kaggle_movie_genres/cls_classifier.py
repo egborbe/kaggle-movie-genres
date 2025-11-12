@@ -15,6 +15,6 @@ class CLS_Classifier(nn.Module):
     def forward(self, input_ids, attention_mask):
         outputs = self.bert_embedder(input_ids, attention_mask=attention_mask)
         cls_embedding = outputs.last_hidden_state[:, 0, :]  # [CLS] token
-        logits = self.classifier(cls_embedding)
+        logits = self.classifier(self.dropout(cls_embedding))
         probabilities = torch.sigmoid(logits)
         return probabilities
