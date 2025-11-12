@@ -1,0 +1,18 @@
+label_file: data/movies_genres.csv
+featurizer_name: distilbert-base-uncased
+title_max_len: 128
+tokenizer_max_length: 256
+
+random_seed: 42
+num_folds: 5
+validation_fraction: 0.2
+
+
+batch_size: 32
+learning_rate: 1e-3
+num_epochs: 20
+dropout_rate: 0.3
+model_save_path: models/
+device: cuda
+
+
