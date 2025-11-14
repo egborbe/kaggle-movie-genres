@@ -19,6 +19,7 @@ class MovieGenresDataset(Dataset):
     def __init__(self, df: pd.DataFrame, tokenizer, labelhandler, config: dict):
         
         self.df = df
+
         self.tokenizer = tokenizer
         self.labelhandler = labelhandler
         self.config = config
@@ -26,8 +27,8 @@ class MovieGenresDataset(Dataset):
         logger.info(f"Using max token length: {self.max_len}")
         
     def __len__(self):
-        return len(self.df)
-
+        return len(self.df) 
+    
     def __getitem__(self, idx):
         row = self.df.iloc[idx]
 
@@ -71,6 +72,9 @@ def create_dataloader(filename, tokenizer, labelhandler, config, fold=None, vali
     """
     df = pd.read_csv(filename)
     logger.info(f"Loaded {len(df)} records from {filename}")
+    if config.get('max_dataset_size', None) is not None:
+        df = df.head(config['max_dataset_size'])
+        logger.info(f"Using only first {config['max_dataset_size']} records from the dataset")
     dataset = MovieGenresDataset(df, tokenizer, labelhandler, config)
     batch_size = config['batch_size']
     validation_fraction = config['validation_fraction']

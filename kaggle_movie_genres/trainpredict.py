@@ -83,7 +83,7 @@ class TrainPredict:
             self.val_epochs_data.append(val_data)
             self.test_epochs_data.append(test_data)
 
-            logger.info(f"Epoch {epoch+1} completed. Train Loss: {train_data['loss']:.4f}, Val Loss: {val_data['loss']:.4f}, Test Loss: {test_data['loss']:.4f}")   
+            logger.info(f"Epoch {epoch+1} completed. Train Loss: {train_data.avg_loss:.4f}, Val Loss: {val_data.avg_loss:.4f}")   
             self._present_results()
                 
     def _present_results(self):
