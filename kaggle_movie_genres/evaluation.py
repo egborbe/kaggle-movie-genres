@@ -17,11 +17,11 @@ class ModelData:
         self.metrics = []
         
     def add_batch(self, features, true_labels, probs, loss):
-        self.movie_ids.append(features['movie_id'].cpu())
+        self.movie_ids.append(features['movie_id'].detach().cpu())
         self.probs.append(probs.detach().cpu())
         self.movie_descriptions.append(features['movie_description'])
-        self.true_labels.append(true_labels.cpu())
-        self.losses.append(loss)
+        self.true_labels.append(true_labels.detach().cpu())
+        self.losses.append(loss.detach().cpu())
             
     
     def process_epoch_data(self):

@@ -7,6 +7,9 @@ import logging
 import time
 from matplotlib import pyplot as plt
 import tqdm
+import yaml
+import os
+
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +29,11 @@ class TrainPredict:
         self.validation_dataloader = validation_dataloader
         self.test_dataloader = test_dataloader
         self.loss_fn = nn.BCELoss()
-
+        # save config to folder for reproducibility
+        os.makedirs(self.folder_name, exist_ok=True)
+        with open(f"{self.folder_name}/config.yaml", 'w') as f:
+            yaml.dump(self.config, f)
+        
     def _to_device(self, features, labels):
         features = {key: value.to(self.device) if isinstance(value, torch.Tensor) else value for key, value in features.items()}
         labels = labels.to(self.device)
@@ -35,7 +42,7 @@ class TrainPredict:
     def train_one_epoch(self):
         self.model.train()
         train_data = ModelData(self.config, self.labelhandler)
-        for features, labels  in tqdm.tqdm(self.train_dataloader):
+        for features, labels  in self.train_dataloader:
             features, labels = self._to_device(features, labels)
 
             self.optimizer.zero_grad()
@@ -54,7 +61,7 @@ class TrainPredict:
         self.model.eval()
         epoch_data = ModelData(self.config, self.labelhandler)
         with torch.no_grad():
-            for features, labels in tqdm.tqdm(dataloader):
+            for features, labels in dataloader:
                 features, labels = self._to_device(features, labels)
 
                 outputs = self.compiled_model(input_ids=features['input_tokens'], attention_mask=features['attention_mask'])
@@ -84,6 +91,8 @@ class TrainPredict:
             self.test_epochs_data.append(test_data)
 
             logger.info(f"Epoch {epoch+1} completed. Train Loss: {train_data.avg_loss:.4f}, Val Loss: {val_data.avg_loss:.4f}")   
+            # save model to folder
+            torch.save(self.model.state_dict(), f"{self.folder_name}/model_epoch_{epoch+1}.pt")
             self._present_results()
                 
     def _present_results(self):

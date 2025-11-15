@@ -100,6 +100,6 @@ def create_dataloader(filename, tokenizer, labelhandler, config, fold=None, vali
             val_dataset = torch.utils.data.Subset(dataset, val_indices)
         else:
             train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size], generator=generator)
-        return DataLoader(train_dataset, batch_size=batch_size, shuffle=True), DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        return DataLoader(train_dataset, num_workers=4, batch_size=batch_size, shuffle=True), DataLoader(val_dataset, num_workers=4, batch_size=batch_size, shuffle=False)
 
-    return DataLoader(dataset, batch_size=batch_size, shuffle=False), None
+    return DataLoader(dataset, num_workers=4, batch_size=batch_size, shuffle=False), None
