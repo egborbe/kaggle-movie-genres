@@ -22,6 +22,7 @@ class TrainPredict:
         self.labelhandler = labelhandler
 
         self.optimizer = torch.optim.Adam(model.parameters(), float(config['learning_rate']))
+        self.optimizer_bert = torch.optim.Adam(model.bert_embedder.parameters(), float(config['learning_rate_bert']))
         self.device = config['device']
         self.model = model.to(self.device)
         self.compiled_model = torch.compile(self.model)
@@ -46,11 +47,12 @@ class TrainPredict:
             features, labels = self._to_device(features, labels)
 
             self.optimizer.zero_grad()
+            self.optimizer_bert.zero_grad()
             outputs = self.compiled_model(input_ids=features['input_tokens'], attention_mask=features['attention_mask'])
             loss = self.loss_fn(outputs, labels.float())
             loss.backward()
             self.optimizer.step()
-            
+            self.optimizer_bert.step()
 
             train_data.add_batch(features, labels, outputs, loss.item())
             

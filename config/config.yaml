@@ -1,5 +1,6 @@
 label_file: data/movies_genres.csv
 featurizer_name: distilbert-base-uncased
+name: distilbert-base-uncased-x2-pool_finetune
 title_max_len: 128
 tokenizer_max_length: 256
 
@@ -10,10 +11,12 @@ validation_fraction: 0.2
 
 batch_size: 32
 learning_rate: 1e-3
+learning_rate_bert: 1e-5
 num_epochs: 50
 dropout_rate: 0.3
 model_save_path: models/
 device: cuda
 
-
+classifier_hidden_size_factor: 2
+classifier_type: Pool_Classifier
 

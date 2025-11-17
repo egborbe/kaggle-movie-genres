@@ -21,7 +21,7 @@ class ModelData:
         self.probs.append(probs.detach().cpu())
         self.movie_descriptions.append(features['movie_description'])
         self.true_labels.append(true_labels.detach().cpu())
-        self.losses.append(loss.detach().cpu())
+        self.losses.append(loss)
             
     
     def process_epoch_data(self):
