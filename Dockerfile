@@ -10,31 +10,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl build-essential \
  && rm -rf /var/lib/apt/lists/*
 
-# ---- Install Poetry ----
-ENV POETRY_VERSION=1.8.3
-RUN curl -sSL https://install.python-poetry.org | python3 -
+# Create a non-root user with sudo privileges
+RUN useradd -m -s /bin/bash gabor \
+    && echo "devuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+RUN pip install datasets numpy pandas scikit-learn tqdm matplotlib seaborn kaggle black jupyter ipykernel 
+# Set working directory for that user
+RUN chown -R gabor /home/gabor 
 
-# Add Poetry to PATH
-ENV PATH="/root/.local/bin:$PATH"
+# Switch to the new user
+USER gabor
+RUN chmod -R 777 /home/gabor
 
-# ---- Configure Poetry ----
-# 1. Keep Poetry’s venv inside project folder (.venv)
-# 2. Don’t ask interactive questions
-ENV POETRY_VIRTUALENVS_IN_PROJECT=true
-ENV POETRY_NO_INTERACTION=1
+WORKDIR /home/gabor/app
+COPY . /home/gabor/app
 
-# ---- Working directory ----
-WORKDIR /app
-
-# ---- Copy project files ----
-COPY pyproject.toml poetry.lock* /app/
-
-# ---- Install dependencies (no root packages yet) ----
-RUN poetry install --no-root --no-dev
-
-# ---- Copy the rest of the app ----
-COPY . /app
+EXPOSE 8888
 
 # ---- Default command ----
-CMD ["poetry", "run", "python", "main.py"]
-
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
